@@ -4,6 +4,8 @@ st.title("Course Management App")
 st.header("Assigment Management")
 st.subheader("Dashboard")
 
+next_assignment_id_number = 3
+
 st.divider()
 st.markdown("----------------")
 
@@ -46,8 +48,41 @@ if assignment_type2 == "Other":
 
 due_date = st.date_input("Due Date")
 
-btn_save = st.button("Save Assignment", use_container_width=True)
+btn_save = st.button("Save Assignment", width="stretch", disabled = False)
+
+import time
 
 if btn_save:
-    st.warning("Working on it....")
+    if not title:
+        st.warning("Title Needs to be Provided")
+    else:
+        with st.spinner("Assignment is Being Recorded...."):
+            time.sleep(5)
+
+            new_assignment_id = "HW" + str(next_assignment_id_number)
+            next_assignment_id_number += 1
+
+            assignments.append(
+                {
+                    "id" : new_assignment_id,
+                    "title" : title,
+                    "description" : description,
+                    "points" : points,
+                    "type" : assignment_type
+                }
+            )
+ 
+
+
+            st.success("New Assignment is Recorded!")
+            st.info("This is a New Assignment")
+            st.dataframe(assignments)
+
+
+
+
+
     
+
+
+
