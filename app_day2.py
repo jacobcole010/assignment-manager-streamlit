@@ -51,6 +51,10 @@ due_date = st.date_input("Due Date")
 btn_save = st.button("Save Assignment", width="stretch", disabled = False)
 
 import time
+import json
+from pathlib import Path
+
+json_path = Path("assignments.json")
 
 if btn_save:
     if not title:
@@ -71,7 +75,11 @@ if btn_save:
                     "type" : assignment_type
                 }
             )
- 
+
+            #Record into JSON File
+            with json_path.open("w", encoding="utf-8") as f:
+                json.dump(assignments, f)
+
 
 
             st.success("New Assignment is Recorded!")
