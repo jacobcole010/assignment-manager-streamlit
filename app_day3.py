@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 st.set_page_config(page_title = "Course Management",
-                   page_icon = "",
+                   page_icon = "🎓",
                    layout="centered",
                    initial_sidebar_state="collapsed")
 
@@ -62,7 +62,11 @@ with tab1:
                 selected_assignment = assignment
                 break
 
-
+        
+        st.divider()
+        selected_assignment = st.selectbox("Select Title",
+                                          options=assignments,
+                                          format_func=lambda x: f"{x['title']} [{x['type']}]")
 
         if selected_assignment:
             with st.expander("Assignment Details", expanded=True):
@@ -122,7 +126,9 @@ with tab2:
 
                 st.success("New Assignment is Recorded!")
                 st.info("This is a New Assignment")
-                st.dataframe(assignments)
+                time.sleep(3)
+                #st.dataframe(assignments)
+                st.rerun()
 
 
 with tab3:
@@ -142,13 +148,24 @@ with tab3:
 
 
     if assignment_edit:
-        edit_title = st.text_input("Title", key="edit_title", value = assignment_edit["title"])
-        edit_description = st.text_area("Description", key= "edit_description" , value = assignment_edit["description"])
+        edit_title = st.text_input("Title", key=f"edit_title_{assignment_edit['id']}",
+                                    value = assignment_edit["title"])
+        edit_description = st.text_area("Description", key= f"edit_description_{assignment_edit['id']}",
+                                        value = assignment_edit["description"])
+
+        type_options = ["Homework", "Lab"]
+        selected_index = type_options.index(assignment_edit["type"])
+
+
+        edit_type = st.radio("Type", type_options,
+                            key= f"edit_type_{assignment_edit['id']}",
+                            index = selected_index)
+        
 
     btn_update = st.button("Update", key="update_button", type="secondary", use_container_width=True)
     if btn_update:
         with st.spinner("Updating..."):
-            time.sleep(5)
+            time.sleep(3)
             assignment_edit["title"] = edit_title
             assignment_edit["description"] = edit_description
 
@@ -156,5 +173,11 @@ with tab3:
                 json.dump(assignments, f)
 
             st.success("Assignment Updated!")
+            time.sleep(3)
+            st.rerun()
+
+with st.sidebar:
+    st.markdown("Sidebar")
+
 
 
