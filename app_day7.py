@@ -12,6 +12,13 @@ st.set_page_config("Orders Management App", layout="wide", initial_sidebar_state
 if "page" not in st.session_state:
     st.session_state["page"] = "home"
 
+if "messages" not in st.session_state:
+    st.session_state["messages"] = [
+        {
+            "role": "assistant",
+            "content": "Hi! How can I help you?"
+        }
+    ]
 
 inventory = [
     {"item_id": 1, "name": "Espresso", "unit_price": 2.50, "stock": 40},
@@ -48,7 +55,7 @@ if st.session_state["page"] == "home":
     st.markdown("# Orders Management Application - Home Page")
     col1, col2 = st.columns([4,2])
     with col1:
-        selected_category = st.radio("Select a List", ["Inventory", "Orders"], horizontal=True)
+        selected_category = st.radio("Select a List", ["Orders", "Inventory"], horizontal=True)
         if selected_category == "Inventory":
            if len(inventory) > 0:
                 st.dataframe(inventory)
@@ -71,3 +78,41 @@ if st.session_state["page"] == "home":
         
 elif st.session_state["page"] == "orders":
     st.markdown("Under Development")
+    tab1, tab2 = st.tabs(["Add New Order", "Cancel an Order"])
+
+    with tab1:
+        col1,col2 = st.columns([3,3])
+
+        if st.button("Create New Order", key="create_order_btn", type="primary", use_container_width=True):
+            with st.spinner("Recording the New Order..."):
+                total = quantity * selected_item["unit_price"]
+
+                for item in inventory:
+                    if item["item_id"] == selected_item["item_id"]:
+                        item["stock"] = item["stock"] - quantity
+                        break
+
+                orders.append({
+                    "id": str(uuid.uuid4()),
+                    "item_id": selected_item["item_id"],
+                    "quantity": quantity,
+                    "status": "placed",
+                    "total": total
+                })    
+                
+
+                with open(json_path_inventory, "w") as f:
+                    json.dump(inventory, f)
+
+                with open(json_path_orders, "w") as f:
+                    json.dump(orders, f)
+
+                st.balloons()
+                time.sleep(3)
+
+                st.session_state["page"] = "home"
+                st.rerun()
+
+
+    with tab2:
+            pass
